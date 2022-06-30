@@ -1,7 +1,6 @@
 const defaultState = {
   cash: 0,
 };
-// action = {type: '', payload: ''}
 
 const ADD_CASH = "ADD_CASH";
 const GET_CASH = "GET_CASH";

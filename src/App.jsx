@@ -1,17 +1,19 @@
 import "./App.css";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { addCashAction, getCashAction } from "./store/CashReducer";
 import {
   addCustomerAction,
+  addManyCustomersAction,
   removeCustomerAction,
-} from "./store/customerReducer";
-import { addCashAction, getCashAction } from "./store/cashReducer";
+} from "./store/CustomerReducer";
+import { fetchCustomers } from "./asyncActions/fetchCustomers";
 
 function App() {
   const dispatch = useDispatch();
   const cash = useSelector((state) => state.cash.cash);
   const customers = useSelector((state) => state.customers.customers);
-  console.log(customers);
+
   const addCash = (cash) => {
     dispatch(addCashAction(cash));
   };
@@ -22,14 +24,14 @@ function App() {
 
   const addCustomer = (name) => {
     const newCustomer = {
+      name,
       id: Date.now(),
-      name: name,
     };
     dispatch(addCustomerAction(newCustomer));
   };
 
   const removeCustomer = (customer) => {
-    dispatch(removeCustomerAction(customer.id));
+    dispatch(removeCustomerAction(customer));
   };
 
   return (
@@ -37,35 +39,31 @@ function App() {
       <div style={{ fontSize: "3rem" }}>Баланс: {cash}</div>
       <div style={{ display: "flex" }}>
         <button onClick={() => addCash(Number(prompt()))}>
-          Пополнить счет
+          Добавить денег
         </button>
-        <button onClick={() => getCash(Number(prompt()))}>
-          Снять со счета
-        </button>
+        <button onClick={() => getCash(Number(prompt()))}>Взять деньги</button>
         <button onClick={() => addCustomer(prompt())}>Добавить клиента</button>
-        <button onClick={() => addCustomer(prompt())}>Удалить клиента</button>
+        <button onClick={() => dispatch(fetchCustomers())}>
+          Получить всех клиентов
+        </button>
       </div>
-      {customers.length > 0 ? (
-        <div>
-          {customers.map((customer) => (
-            <div
-              key={customer.id}
-              onClick={() => removeCustomer(customer)}
-              style={{
-                fontSize: "2rem",
-                border: "1px solid black",
-                padding: "10px",
-                marginTop: "5px",
-              }}
-            >
-              {customer.name}
-            </div>
-          ))}
-        </div>
+      {!customers.length ? (
+        <h1>Список клиентов пуст</h1>
       ) : (
-        <div>
-          <h1>Список пользователей пуст</h1>
-        </div>
+        customers.map((customer) => (
+          <div
+            style={{
+              fontSize: "3rem",
+              border: "1px solid teal",
+              marginTop: "15px",
+              cursor: "pointer",
+            }}
+            onClick={() => removeCustomer(customer.id)}
+            key={customer.id}
+          >
+            {customer.name}
+          </div>
+        ))
       )}
     </div>
   );
